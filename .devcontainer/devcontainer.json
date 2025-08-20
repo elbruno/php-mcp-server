@@ -1,14 +1,41 @@
 {
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "features": {
-    "ghcr.io/devcontainers/features/php:1": {}
+    "ghcr.io/devcontainers/features/php:1": {},
+    // Install docker CLI inside the container so you can run `docker` from within the devcontainer
+    "ghcr.io/devcontainers/features/docker-cli:1": {},
+    // Use composer feature to ensure composer is present in the image (if available)
+    "ghcr.io/devcontainers/features/composer:1": {},
+    // Xdebug feature (optional) — provides Xdebug preinstalled in the container for debugging
+    "ghcr.io/devcontainers/features/xdebug:1": {}
   },
+  "runArgs": [
+    // Mount Docker socket so the container can access the host Docker daemon (useful on Docker Desktop/WSL)
+    "-v",
+    "/var/run/docker.sock:/var/run/docker.sock"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
         "GitHub.copilot",
-        "GitHub.copilot-chat"
-      ]
+        "GitHub.copilot-chat",
+        // Docker and remote development helpers
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        // PHP tooling
+        "bmewburn.vscode-intelephense-client",
+        "felixfbecker.php-debug",
+        "felixfbecker.php-intellisense",
+        "junstyle.php-cs-fixer",
+        "kokororin.vscode-phpfmt",
+        "neilbrayfield.php-docblocker"
+      ],
+      "settings": {
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "intelephense.files.maxSize": 5000000
+      }
     }
-  }
+  },
+  // Run after container is created to ensure PHP, composer and extensions are installed and to install dependencies
+  "postCreateCommand": ".devcontainer/scripts/install-php-requirements.sh || true"
 }

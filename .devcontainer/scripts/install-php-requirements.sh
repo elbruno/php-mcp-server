@@ -31,6 +31,11 @@ if [ "$php_version_ok" = false ]; then
     if command -v php >/dev/null 2>&1; then
       php_version_ok=true
     fi
+      # Try to install docker client as a fallback if the devcontainer feature isn't available
+      if ! command -v docker >/dev/null 2>&1; then
+        echo "[devcontainer] Docker CLI not found inside container; attempting to install docker.io via apt"
+        apt-get install -y --no-install-recommends docker.io || true
+      fi
   else
     echo "[devcontainer] apt-get not available; cannot auto-install PHP. Please ensure PHP >= 8.1 is installed in the image."
   fi
@@ -72,6 +77,17 @@ if [ -f /workspaces/php-mcp-server/composer.json ] || [ -f /workspace/composer.j
     cd /workspace
   fi
   composer install --no-interaction --no-ansi || true
+fi
+
+if command -v docker >/dev/null 2>&1; then
+  echo "[devcontainer] docker CLI available inside container: $(docker --version || true)"
+  if [ -e /var/run/docker.sock ]; then
+    echo "[devcontainer] Docker socket mounted at /var/run/docker.sock"
+  else
+    echo "[devcontainer] Docker socket not mounted inside container; if you need docker-from-container, mount /var/run/docker.sock in devcontainer.json runArgs"
+  fi
+else
+  echo "[devcontainer] docker CLI not available in the container"
 fi
 
 echo "[devcontainer] install-php-requirements.sh finished"

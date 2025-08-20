@@ -1,13 +1,7 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {
-    "ghcr.io/devcontainers/features/php:1": {},
-    // Install docker CLI inside the container so you can run `docker` from within the devcontainer
-    "ghcr.io/devcontainers/features/docker-cli:1": {},
-    // Use composer feature to ensure composer is present in the image (if available)
-    "ghcr.io/devcontainers/features/composer:1": {},
-    // Xdebug feature (optional) — provides Xdebug preinstalled in the container for debugging
-    "ghcr.io/devcontainers/features/xdebug:1": {}
+  // Use a Dockerfile build to avoid relying on GHCR feature resolution (which may require auth).
+  "build": {
+    "dockerfile": "Dockerfile"
   },
   "runArgs": [
     // Mount Docker socket so the container can access the host Docker daemon (useful on Docker Desktop/WSL)
